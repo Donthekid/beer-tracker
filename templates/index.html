@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>1 MILLION BEERS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1 id="title">1 MILLION BEERS</h1>
+  <h2 id="total-beers-container">Total Beers: <span id="total-beers">0</span></h2>
+
+  <div class="tabs">
+    <button class="tab-button active" onclick="switchTab('total')">Total</button>
+    <button class="tab-button" onclick="switchTab('weekly')">Weekly</button>
+    <button class="tab-button" onclick="switchTab('monthly')">Monthly</button>
+  </div>
+
+  <div id="leaderboard-container"></div>
+
+  <!-- Hidden beer data for JS -->
+  <div id="user-list" style="display: none;">
+    {% for user in users %}
+      <div class="user-card" data-user="{{ user }}">
+        <span class="beer-count">{{ data[user]["total"] }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id="woman-container"></div>
+
+  <script src="/static/main.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,55 @@
+async function addBeer(user, amount) {
+  const res = await fetch('/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: user, count: amount })
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    const userCard = document.querySelector(`[data-user="${user}"]`);
+    const countEl = userCard.querySelector('.beer-count');
+    countEl.textContent = data.new_total;
+    updateTotalBeers();
+  }
+}
+
+function updateTotalBeers() {
+  let total = 0;
+  document.querySelectorAll('.beer-count').forEach(el => {
+    total += parseInt(el.textContent);
+  });
+  document.getElementById('total-beers').textContent = total;
+}
+function renderLeaderboard() {
+  const leaderboard = [];
+
+  document.querySelectorAll('.user-card').forEach(card => {
+    const name = card.getAttribute('data-user');
+    const beers = parseInt(card.querySelector('.beer-count').textContent);
+    leaderboard.push({ name, beers });
+  });
+
+  leaderboard.sort((a, b) => b.beers - a.beers);
+
+  const maxBeers = leaderboard[0]?.beers || 1;
+  const container = document.getElementById('leaderboard-list');
+  container.innerHTML = '';
+
+  leaderboard.forEach((user, i) => {
+    const row = document.createElement('div');
+    row.className = 'leaderboard-row';
+    row.innerHTML = `
+      <span class="rank">#${i + 1}</span>
+      <span class="name">${user.name}</span>
+      <div class="bar-wrapper">
+        <div class="bar" style="width: ${Math.round((user.beers / maxBeers) * 100)}%"></div>
+      </div>
+      <span class="score">${user.beers} 🍺</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+window.onload = updateTotalBeers;
+
