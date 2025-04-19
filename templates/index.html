@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>1 MILLION BEERS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -17,9 +17,11 @@
     <button class="tab-button" onclick="switchTab('monthly')">Monthly</button>
   </div>
 
-  <div id="leaderboard-container"></div>
+  <div id="leaderboard-container">
+    <!-- JS will inject all user rows here -->
+  </div>
 
-  <!-- Hidden beer data for JS -->
+  <!-- Hidden user data so JS can load beer counts -->
   <div id="user-list" style="display: none;">
     {% for user in users %}
       <div class="user-card" data-user="{{ user }}">
@@ -28,10 +30,10 @@
     {% endfor %}
   </div>
 
+  <!-- Woman animation (optional for +5) -->
   <div id="woman-container"></div>
 
   <script src="/static/main.js"></script>
 </body>
 </html>
-
 
