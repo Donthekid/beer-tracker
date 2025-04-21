@@ -85,8 +85,68 @@ def admin_adjust():
 
     save_data(data)
     return jsonify(success=True, new_total=data[username]["total"])
+@app.route('/admin/set_aotw', methods=['POST'])
+def set_aotw():
+    data = request.json
+    name = data.get("name", "")
+    image = data.get("image", "")
+    message = data.get("message", "")
+
+    aotw_data = {
+        "name": name,
+        "image": image,
+        "message": message
+    }
+
+    try:
+        with open(AOTW_FILE, 'w') as f:
+            json.dump(aotw_data, f, indent=2)
+        return jsonify(success=True)
+    except:
+        return jsonify(success=False), 500
 
 # Run the app
+TOAST_FILE = 'data/toast.json'
+
+def load_toasts():
+    try:
+        with open(TOAST_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_toasts(toasts):
+    with open(TOAST_FILE, 'w') as f:
+        json.dump(toasts, f, indent=2)
+
+@app.route('/toast', methods=['GET'])
+def get_toasts():
+    return jsonify(load_toasts())
+
+@app.route('/toast', methods=['POST'])
+def post_toast():
+    data = request.json
+    name = data.get("name")
+    count = int(data.get("count"))
+    timestamp = datetime.now().isoformat()
+
+    toasts = load_toasts()
+
+    if toasts and toasts[-1]["name"] == name:
+        toasts[-1]["count"] += count
+        toasts[-1]["timestamp"] = timestamp
+    else:
+        toasts.append({
+            "name": name,
+            "count": count,
+            "timestamp": timestamp
+        })
+        if len(toasts) > 5:
+            toasts.pop(0)
+
+    save_toasts(toasts)
+    return jsonify(success=True)
+
 if __name__ == '__main__':
     app.run(debug=True)
 

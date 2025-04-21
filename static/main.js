@@ -1,6 +1,6 @@
 let currentTab = 'total';
 
-// 🍺 Add Beers
+// 🍺 Log beers
 async function addBeer(user, amount) {
   const res = await fetch('/add', {
     method: 'POST',
@@ -14,57 +14,41 @@ async function addBeer(user, amount) {
     const countEl = userCard.querySelector('.beer-count');
     countEl.textContent = data.new_total;
 
-    addToToastFeed(user, amount);
+    await addToToastFeed(user, amount);
 
     if (amount === 5) showWoman();
-
     updateLeaderboard();
     updateTotalBeers();
   }
 }
 
-// 🍻 Toast Feed
-let toastFeed = [];
-
-function addToToastFeed(name, count) {
-  const now = new Date();
-  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const date = now.toLocaleDateString();
-
-  const last = toastFeed[toastFeed.length - 1];
-  if (last && last.name === name && (now - last.timestamp < 10000)) {
-    last.count += count;
-    last.timestamp = now;
-  } else {
-    toastFeed.push({
-      name,
-      count,
-      timestamp: now,
-      time,
-      date
-    });
-
-    if (toastFeed.length > 10) {
-      toastFeed.shift();
-    }
-  }
-
-  renderToastFeed();
+// 🔁 Add toast to global server-side log
+async function addToToastFeed(name, count) {
+  await fetch('/toast', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, count })
+  });
 }
 
-function renderToastFeed() {
+// 🔁 Load shared toast feed from server
+async function loadToasts() {
+  const res = await fetch('/toast');
+  const feed = await res.json();
+
   const list = document.getElementById('toast-list');
   if (!list) return;
 
   list.innerHTML = '';
-  toastFeed.slice().reverse().forEach(toast => {
+  feed.slice().reverse().forEach(toast => {
+    const time = new Date(toast.timestamp);
     const li = document.createElement('li');
-    li.innerHTML = `${toast.name} has logged <strong>${toast.count}</strong> beers<br><span class="toast-time">${toast.date} @ ${toast.time}</span>`;
+    li.innerHTML = `${toast.name} has logged <strong>${toast.count}</strong> beers<br><span class="toast-time">${time.toLocaleDateString()} @ ${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`;
     list.appendChild(li);
   });
 }
 
-// 🏆 Leaderboard
+// 📊 Update leaderboard
 function updateLeaderboard() {
   const leaderboard = [];
 
@@ -103,11 +87,11 @@ function updateLeaderboard() {
         <button onclick="addBeer('${user.name}', 5)">+5</button>
       </div>
     `;
-
     container.appendChild(row);
   });
 }
 
+// 🏅 Rank title logic
 function getTitle(rank, beers) {
   if (beers === 0) return "Virgin";
   if (rank === 0) return "Alcoholic in Chief";
@@ -118,7 +102,7 @@ function getTitle(rank, beers) {
   return "Weekend Warrior";
 }
 
-// 📊 Update Progress Bar
+// 📈 Update total beers and progress bar
 function updateTotalBeers() {
   let total = 0;
   document.querySelectorAll('.beer-count').forEach(el => {
@@ -138,7 +122,7 @@ function updateTotalBeers() {
   }
 }
 
-// 💃 Woman animation for +5
+// 💃 Woman animation
 function showWoman() {
   const woman = document.getElementById('woman-container');
   woman.innerText = '💃🍺🍺🍺🍺🍺';
@@ -150,7 +134,7 @@ function showWoman() {
   }, 1500);
 }
 
-// 🔐 Admin Panel Toggle (Ctrl + `)
+// 🔐 Toggle Admin Panel
 window.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.key === '`') {
     const panel = document.getElementById('admin-panel');
@@ -158,7 +142,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// 🔐 Submit custom beer change
+// 🔐 Admin: Adjust beers
 async function submitBeerAdjustment() {
   const name = document.getElementById('admin-name').value.trim();
   const amount = parseInt(document.getElementById('admin-amount').value);
@@ -175,14 +159,14 @@ async function submitBeerAdjustment() {
   });
 
   if (res.ok) {
-    alert(`Successfully adjusted ${name} by ${amount} beers!`);
+    alert(`Adjusted ${name} by ${amount} beers!`);
     location.reload();
   } else {
     alert("Failed to apply change.");
   }
 }
 
-// 👑 Submit Alcoholic of the Week update
+// 👑 Admin: Set AOTW
 async function submitAOTW() {
   const name = document.getElementById('aotw-name-input').value.trim();
   const image = document.getElementById('aotw-image-input').value.trim();
@@ -200,15 +184,18 @@ async function submitAOTW() {
   });
 
   if (res.ok) {
-    alert("Alcoholic of the Week updated!");
+    alert("AOTW updated!");
     location.reload();
   } else {
     alert("Failed to update AOTW.");
   }
 }
 
-// 🏁 Initialize
+// 🏁 On page load
 window.onload = () => {
   updateLeaderboard();
   updateTotalBeers();
+  loadToasts();
+  setInterval(loadToasts, 10000);
 };
+

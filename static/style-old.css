@@ -11,7 +11,7 @@ body {
   text-align: center;
   overflow-x: hidden;
   margin: 0;
-  padding-right: 240px;
+  padding-right: 240px; /* prevent overlap from AOTW card */
 }
 
 /* TITLE */
@@ -36,6 +36,7 @@ body {
 
 #progress-label {
   margin-bottom: 5px;
+  color: #f0f0f0;
 }
 
 #progress-bar-wrapper {
@@ -89,7 +90,7 @@ body {
 .leaderboard-row {
   background: #1c1c1c;
   border: 2px solid #444;
-  margin: 12px 0;
+  margin: 10px 0;
   padding: 10px;
   border-radius: 10px;
   display: flex;
@@ -254,17 +255,42 @@ body {
   left: 10px;
 }
 
-/* ADMIN PANEL */
+/* MOBILE TWEAKS */
+@media (max-width: 600px) {
+  body {
+    padding-right: 0;
+  }
+
+  #toast-feed {
+    font-size: 9px;
+    width: 180px;
+  }
+
+  #aotw-card {
+    display: none;
+  }
+
+  .tab-button {
+    font-size: 8px;
+    padding: 5px 10px;
+  }
+
+  .buttons button {
+    font-size: 7px;
+    padding: 4px 6px;
+  }
+}
+
 #admin-panel {
   display: none;
-  position: fixed;
-  bottom: 20px;
+  position: fixed; 
+  bottom: 20px; 
   right: 10px;
   width: 220px;
   background-color: #1c1c1c;
   border: 2px solid #f8c400;
   padding: 10px;
-  color: #fff;
+  color: #fff; 
   border-radius: 10px;
   font-size: 10px;
   text-align: left;
@@ -289,38 +315,5 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-
-/* 📱 MOBILE STYLES */
-@media (max-width: 600px) {
-  body {
-    padding-right: 0;
-  }
-
-  #toast-feed {
-    position: relative;
-    width: 100%;
-    top: 0;
-    left: 0;
-    margin: 20px 0;
-  }
-
-  #aotw-card {
-    display: none;
-  }
-
-  .tab-button {
-    font-size: 10px;
-    padding: 10px 14px;
-  }
-
-  .buttons button {
-    font-size: 10px;
-    padding: 10px;
-  }
-
-  #leaderboard-container {
-    padding: 0 5px;
-  }
 }
 
