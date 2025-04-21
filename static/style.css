@@ -306,7 +306,10 @@ body {
   }
 
   #aotw-card {
-    display: none;
+#aotw-card {
+  position: relative;
+  width: 100%;
+  margin: 20px auto;
   }
 
   .tab-button {
