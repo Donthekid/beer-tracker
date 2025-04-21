@@ -8,20 +8,45 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+<!-- 👑 Alcoholic of the Week Card -->
+<div id="aotw-card">
+  <h3>👑 Alcoholic of the Week</h3>
+  <img id="aotw-image" src="{{ aotw.image }}" alt="{{ aotw.name }}">
+  <p id="aotw-name">{{ aotw.name }}</p>
+  <p id="aotw-message">{{ aotw.message }}</p>
+</div>
+
+
+
+  <!-- 🥂 TOAST FEED -->
+  <div id="toast-feed">
+    <h3>🍻 Recent Toasts</h3>
+    <ul id="toast-list"></ul>
+  </div>
+
+  <!-- 🏆 TITLE + TOTAL BEERS -->
   <h1 id="title">1 MILLION BEERS</h1>
   <h2 id="total-beers-container">Total Beers: <span id="total-beers">0</span></h2>
 
+  <!-- 📊 PROGRESS TO 1 MILLION -->
+  <div id="progress-container">
+    <div id="progress-label">0 / 1,000,000 Beers (0%)</div>
+    <div id="progress-bar-wrapper">
+      <div id="progress-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- 🗂️ TABS -->
   <div class="tabs">
     <button class="tab-button active" onclick="switchTab('total')">Total</button>
     <button class="tab-button" onclick="switchTab('weekly')">Weekly</button>
     <button class="tab-button" onclick="switchTab('monthly')">Monthly</button>
   </div>
 
-  <div id="leaderboard-container">
-    <!-- JS will inject all user rows here -->
-  </div>
+  <!-- 📈 LEADERBOARD -->
+  <div id="leaderboard-container"></div>
 
-  <!-- Hidden user data so JS can load beer counts -->
+  <!-- 🔍 HIDDEN BEER COUNTS FOR JS -->
   <div id="user-list" style="display: none;">
     {% for user in users %}
       <div class="user-card" data-user="{{ user }}">
@@ -30,10 +55,32 @@
     {% endfor %}
   </div>
 
-  <!-- Woman animation (optional for +5) -->
+  <!-- 💃 ANIMATION CONTAINER -->
   <div id="woman-container"></div>
 
+  <!-- ⚙️ MAIN SCRIPT -->
   <script src="/static/main.js"></script>
+
+<!-- 🔐 Admin Panel -->
+<div id="admin-panel" style="display: none;">
+  <h3>🔧 Admin Panel</h3>
+
+  <!-- ➕ Adjust Beers -->
+  <p>
+    <label>Username:</label><br>
+    <input type="text" id="admin-name" placeholder="e.g. Grace">
+  </p>
+
+  <p>
+    <label>Adjust Beers (+/-):</label><br>
+    <input type="number" id="admin-amount" placeholder="e.g. 5 or -3">
+  </p>
+
+  <button onclick="submitBeerAdjustment()">Apply Change</button>
+</div>
+
 </body>
+
+
 </html>
 

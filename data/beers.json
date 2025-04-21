@@ -96,8 +96,10 @@
     "dates": {}
   },
   "Charlie": {
-    "total": 45,
-    "dates": {}
+    "total": 47,
+    "dates": {
+      "2025-04-21": 2
+    }
   },
   "Devon": {
     "total": 175,
@@ -154,5 +156,17 @@
   "Jacquline": {
     "total": 184,
     "dates": {}
+  },
+  "Sue": {
+    "total": 3,
+    "dates": {
+      "2025-04-21": 3
+    }
+  },
+  "Khoudia": {
+    "total": 1,
+    "dates": {
+      "2025-04-21": 1
+    }
   }
 }

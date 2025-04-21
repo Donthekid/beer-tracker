@@ -1,25 +1,61 @@
-/* Base styles */
+/* RESET & BASE */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Press Start 2P', cursive;
   background-color: #0e0e0e;
   color: #f0f0f0;
-  padding: 20px;
+  padding: 15px;
   text-align: center;
   overflow-x: hidden;
+  margin: 0;
+  padding-right: 240px; /* prevent overlap from AOTW card */
 }
 
-h1#title {
+/* TITLE */
+#title {
   font-size: 16px;
   color: #f8c400;
-  margin-bottom: 10px;
+  margin: 10px 0 5px;
 }
 
 #total-beers-container {
   font-size: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-/* Tabs */
+/* PROGRESS BAR */
+#progress-container {
+  max-width: 500px;
+  margin: 0 auto 20px;
+  text-align: center;
+  font-size: 10px;
+}
+
+#progress-label {
+  margin-bottom: 5px;
+  color: #f0f0f0;
+}
+
+#progress-bar-wrapper {
+  width: 100%;
+  height: 12px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f8c400, #ffdb58);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* TABS */
 .tabs {
   display: flex;
   justify-content: center;
@@ -44,7 +80,7 @@ h1#title {
   color: #000;
 }
 
-/* Leaderboard container */
+/* LEADERBOARD */
 #leaderboard-container {
   max-width: 800px;
   margin: 0 auto;
@@ -105,7 +141,7 @@ h1#title {
   to { width: 100%; }
 }
 
-/* Buttons */
+/* BUTTONS */
 .buttons {
   display: flex;
   gap: 6px;
@@ -126,7 +162,85 @@ h1#title {
   background-color: #ffdb58;
 }
 
-/* Woman animation (optional) */
+/* TOAST FEED */
+#toast-feed {
+  position: fixed;
+  top: 80px;
+  left: 10px;
+  width: 220px;
+  background-color: #1c1c1c;
+  border: 2px solid #f8c400;
+  padding: 10px;
+  font-size: 10px;
+  color: #f0f0f0;
+  border-radius: 10px;
+  text-align: left;
+  z-index: 100;
+}
+
+#toast-feed h3 {
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+#toast-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#toast-list li {
+  margin-bottom: 6px;
+  line-height: 1.3em;
+}
+
+.toast-time {
+  font-size: 8px;
+  color: #aaa;
+}
+
+/* AOTW CARD */
+#aotw-card {
+  position: fixed;
+  top: 80px;
+  right: 10px;
+  width: 200px;
+  background-color: #1c1c1c;
+  border: 2px solid #f8c400;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  z-index: 1000;
+  font-size: 10px;
+}
+
+#aotw-card h3 {
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+#aotw-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f8c400;
+  margin: 8px 0;
+}
+
+#aotw-name {
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0;
+}
+
+#aotw-message {
+  font-size: 9px;
+  color: #ccc;
+  margin-top: 5px;
+}
+
+/* WOMAN ANIMATION */
 #woman-container {
   position: fixed;
   bottom: 10px;
@@ -141,4 +255,64 @@ h1#title {
   left: 10px;
 }
 
+/* MOBILE TWEAKS */
+@media (max-width: 600px) {
+  body {
+    padding-right: 0;
+  }
+
+  #toast-feed {
+    font-size: 9px;
+    width: 180px;
+  }
+
+  #aotw-card {
+    display: none;
+  }
+
+  .tab-button {
+    font-size: 8px;
+    padding: 5px 10px;
+  }
+
+  .buttons button {
+    font-size: 7px;
+    padding: 4px 6px;
+  }
+}
+
+#admin-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  width: 220px;
+  background-color: #1c1c1c;
+  border: 2px solid #f8c400;
+  padding: 10px;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  text-align: left;
+  z-index: 9999;
+}
+
+#admin-panel input {
+  width: 100%;
+  margin: 4px 0 10px;
+  padding: 4px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+#admin-panel button {
+  width: 100%;
+  padding: 6px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  background: #f8c400;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
