@@ -80,6 +80,13 @@ def init_db():
     db.session.commit()
     return "✅ Database initialized with users!"
 
+@app.route('/test')
+def test():
+    try:
+        return f"Connected to DB: {BeerLog.query.count()} users"
+    except Exception as e:
+        return f"DB connection failed: {e}", 500
+
 if __name__ == '__main__':
     app.run(debug=True)
 
