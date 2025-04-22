@@ -29,6 +29,8 @@ class BeerEntry(db.Model):
 class AOTW(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
+    caption = db.Column(db.String(100))
+    image = db.Column(db.String(200))
 
 @app.route('/')
 def index():
@@ -104,20 +106,22 @@ def init_aotw():
     return "✅ AOTW initialized!"
 
 @app.route('/set-aotw')
+
 def set_aotw():
     name = request.args.get("name")
-    caption = request.args.get("caption")
-    image = request.args.get("image")
+    caption = request.args.get("caption", "")
+    image = request.args.get("image", "")
 
     if not name:
         return "❌ Missing name", 400
 
-    # Add optional caption and image handling later if needed
     record = AOTW.query.first()
     if record:
         record.name = name
+        record.caption = caption
+        record.image = image
     else:
-        db.session.add(AOTW(name=name))
+        db.session.add(AOTW(name=name, caption=caption, image=image))
     db.session.commit()
 
     return f"✅ AOTW set to {name}"
