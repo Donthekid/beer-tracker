@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from datetime import datetime
 import os
 
@@ -8,26 +9,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-from sqlalchemy import text
-
-@app.route('/reset-aotw-table')
-def reset_aotw_table():
-    try:
-        db.session.execute(text('DROP TABLE IF EXISTS aotw CASCADE;'))
-        db.session.commit()
-        db.create_all()
-        db.session.add(AOTW(name="No one yet", caption="", image=""))
-        db.session.commit()
-        return "✅ AOTW table reset and initialized!"
-    except Exception as e:
-        return f"❌ Error: {str(e)}", 500
-
+# Final list of 46 users
 USERS = [
     "Alora", "Amanda", "Anthony", "Bella", "Bradley", "Carla", "Carlos", "Charlie", "Daniel",
     "Devon", "Eamon", "Eleana", "Fantasia", "Gor", "Grace", "Gracie", "Ina", "Jacob", "Jacquline",
     "Jasmine", "Jonathon", "Josh", "Kai", "Kenzie", "Kira", "Lauren", "Lucas", "Narissa", "Natalia",
     "Nataly", "Nicolas", "Patrick", "Sophia", "Stephanie", "Steven", "Tessa", "Valentin", "Yoseph", "Yumiko",
-    "Caitlin", "Sue", "Alex", "Devin", "Eunsung"
+    "Yumi", "Caitlin", "Sue", "Alex", "Devin", "Eunsung"
 ]
 
 class BeerLog(db.Model):
@@ -55,7 +43,11 @@ def index():
         user_totals[user] = {"total": total, "dates": {}}
 
     aotw_record = AOTW.query.first()
-    aotw = aotw_record.name if aotw_record else None
+    aotw = {
+        "name": aotw_record.name,
+        "caption": aotw_record.caption,
+        "image": aotw_record.image
+    } if aotw_record else None
 
     return render_template('index.html', users=USERS, data=user_totals, aotw=aotw)
 
@@ -77,10 +69,45 @@ def add_beer():
 
     return jsonify(success=True, new_total=log.total)
 
+@app.route('/admin-adjust')
+def admin_adjust():
+    name = request.args.get('user')
+    amount = request.args.get('amount')
+    if not name or not amount:
+        return "❌ Missing user or amount", 400
+    try:
+        amount = int(amount)
+    except ValueError:
+        return "❌ Invalid amount", 400
+    log = BeerLog.query.get(name)
+    if not log:
+        log = BeerLog(name=name, total=0)
+        db.session.add(log)
+    log.total += amount
+    db.session.commit()
+    return f"✅ {name} now has {log.total} beers."
+
+@app.route('/set-aotw')
+def set_aotw():
+    name = request.args.get("name")
+    caption = request.args.get("caption", "")
+    image = request.args.get("image", "")
+    if not name:
+        return "❌ Missing name", 400
+    record = AOTW.query.first()
+    if record:
+        record.name = name
+        record.caption = caption
+        record.image = image
+    else:
+        db.session.add(AOTW(name=name, caption=caption, image=image))
+    db.session.commit()
+    return f"✅ AOTW set to {name}"
+
 @app.route('/import')
 def import_beer_totals():
     imported_totals = {
-        "Fantasia": 394, "Yumi": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
+        "Fantasia": 394, "Yumiko": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
         "Patrick": 161, "Eamon": 143, "Carlos": 124, "Bella": 116, "Carla": 107,
         "Stephanie": 102, "Nicolas": 97, "Grace": 93, "Daniel": 92, "Nataly": 78,
         "Gor": 63, "Tessa": 53, "Jonathon": 50, "Charlie": 50, "Kira": 49,
@@ -89,18 +116,13 @@ def import_beer_totals():
         "Amanda": 22, "Lucas": 17, "Valentin": 16, "Anthony": 13, "Kenzie": 11,
         "Natalia": 5, "Sophia": 2, "Alora": 2, "Eleana": 1
     }
-
-    # Delete all current records first
     BeerLog.query.delete()
     db.session.commit()
-
-    # Add ALL users with correct total or 0 fallback
     for name in USERS:
         total = imported_totals.get(name, 0)
         db.session.add(BeerLog(name=name, total=total))
-
     db.session.commit()
-    return "✅ All users imported with 0+ beer totals"
+    return "✅ Imported final beer totals"
 
 @app.route('/init')
 def init_db():
@@ -115,30 +137,21 @@ def init_db():
 def init_aotw():
     db.create_all()
     if not AOTW.query.first():
-        db.session.add(AOTW(name="No one yet"))
+        db.session.add(AOTW(name="No one yet", caption="", image=""))
         db.session.commit()
     return "✅ AOTW initialized!"
 
-@app.route('/set-aotw')
-
-def set_aotw():
-    name = request.args.get("name")
-    caption = request.args.get("caption", "")
-    image = request.args.get("image", "")
-
-    if not name:
-        return "❌ Missing name", 400
-
-    record = AOTW.query.first()
-    if record:
-        record.name = name
-        record.caption = caption
-        record.image = image
-    else:
-        db.session.add(AOTW(name=name, caption=caption, image=image))
-    db.session.commit()
-
-    return f"✅ AOTW set to {name}"
+@app.route('/reset-aotw-table')
+def reset_aotw_table():
+    try:
+        db.session.execute(text('DROP TABLE IF EXISTS aotw CASCADE;'))
+        db.session.commit()
+        db.create_all()
+        db.session.add(AOTW(name="No one yet", caption="", image=""))
+        db.session.commit()
+        return "✅ AOTW table reset and initialized!"
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
 
 @app.route('/debug-totals')
 def debug_totals():
@@ -147,18 +160,4 @@ def debug_totals():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-@app.route('/reset-aotw-table')
-def reset_aotw_table():
-    try:
-from sqlalchemy import text
-...
-db.session.execute(text('DROP TABLE IF EXISTS aotw CASCADE;'))
-        db.session.commit()
-        db.create_all()
-        db.session.add(AOTW(name="No one yet", caption="", image=""))
-        db.session.commit()
-        return "✅ AOTW table reset and initialized!"
-    except Exception as e:
-        return f"❌ Error: {str(e)}", 500
 
