@@ -15,7 +15,7 @@ USERS = [
     "Anthony", "Bella", "Bradley", "Caitlin", "Carla", "Charlie", "Devin",
     "Devon", "Eleana", "Eunsung", "Fantasia", "Gracie", "Ina", "Jacquline",
     "Jasmine", "Jon", "Jonathon", "Kai", "Kenzie", "Khoudia", "Kira", "Lucas",
-    "Narissa", "Nataly", "Nicolas", "Steven", "Sue", "Tessa", "Valentin"
+    "Narissa", "Nataly", "Nicolas", "Steven", "Sue", "Tessa", "Valentin", "Yumiko"
 ]
 
 # 🍺 Beer totals
