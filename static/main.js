@@ -52,7 +52,6 @@ async function loadToasts() {
 function updateLeaderboard() {
   const leaderboard = [];
 
-  // Get all user cards (Flask rendered them all, even with 0 beers)
   document.querySelectorAll('.user-card').forEach(card => {
     const name = card.getAttribute('data-user');
     const beers = parseInt(card.querySelector('.beer-count').textContent);
@@ -73,15 +72,15 @@ function updateLeaderboard() {
     const row = document.createElement('div');
     row.className = 'leaderboard-row';
 
-    const xpBarWidth = Math.round((user.beers / maxBeers) * 100);
     const title = getTitle(i, user.beers);
+    const xp = Math.round((user.beers / maxBeers) * 100);
 
     row.innerHTML = `
       <div class="left">
         <div class="name">${user.name}</div>
         <span class="title-tag">${title}</span>
         <div class="count">${user.beers} 🍺</div>
-        <div class="bar-wrapper"><div class="bar" style="width: ${xpBarWidth}%"></div></div>
+        <div class="bar-wrapper"><div class="bar" style="width: ${xp}%"></div></div>
       </div>
       <div class="buttons">
         <button onclick="addBeer('${user.name}', 1)">+1</button>
