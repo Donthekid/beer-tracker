@@ -44,13 +44,20 @@ with app.app_context():
 def index():
     try:
         users = BeerLog.query.all()
+        print("✅ Loaded users from DB")
+        print([u.name for u in users])
+
         user_totals = {
-            user.name: {"total": user.total if user.total else 0, "dates": {}} for user in users
+            user.name: {"total": int(user.total), "dates": {}} for user in users
         }
+
+        print("✅ Built user_totals:", user_totals)
+
+        return render_template('index.html', users=USERS, data=user_totals)
+
     except Exception as e:
-        print("🔥 ERROR loading homepage:", e)
-        user_totals = {name: {"total": 0, "dates": {}} for name in USERS}
-    return render_template('index.html', users=USERS, data=user_totals)
+        print("🔥 ERROR in / route:", str(e))
+        return f"<h1>500 Error</h1><pre>{str(e)}</pre>", 500
 
 @app.route('/add', methods=['POST'])
 def add_beer():
