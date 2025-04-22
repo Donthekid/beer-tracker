@@ -8,94 +8,32 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-
-  <!-- 🎯 Total Beers + Progress -->
   <h1 id="title">1 MILLION BEERS</h1>
   <h2 id="total-beers-container">Total Beers: <span id="total-beers">0</span></h2>
 
-  <div id="progress-container">
-    <div id="progress-label">0 / 1,000,000 Beers (0%)</div>
-    <div id="progress-bar-wrapper">
-      <div id="progress-bar-fill"></div>
-    </div>
-  </div>
+  {% if aotw %}
+    <h3 style="margin-bottom: 20px;">🏅 Alcoholic of the Week: {{ aotw }}</h3>
+  {% endif %}
 
-  <!-- 👑 Alcoholic of the Week -->
-
-  <!-- 🍻 Toast Feed -->
-  <div id="toast-feed">
-    <h3>🍻 Recent Toasts</h3>
-    <ul id="toast-list"></ul>
-  </div>
-
-<div id="aotw-card">
-    <h3>👑 Alcoholic of the Week</h3>
-    <img id="aotw-image" src="{{ aotw.image }}" alt="{{ aotw.name }}">
-    <p id="aotw-name">{{ aotw.name }}</p>
-    <p id="aotw-message">{{ aotw.message }}</p>
-  </div>
-
-  <!-- 🗂️ Tabs -->
   <div class="tabs">
     <button class="tab-button active" onclick="switchTab('total')">Total</button>
     <button class="tab-button" onclick="switchTab('weekly')">Weekly</button>
     <button class="tab-button" onclick="switchTab('monthly')">Monthly</button>
   </div>
 
-  <!-- 📊 Leaderboard -->
   <div id="leaderboard-container"></div>
 
-  <!-- 🔍 Hidden beer counts for JS -->
+  <!-- ✅ Hidden user data so JS can build leaderboard -->
   <div id="user-list" style="display: none;">
     {% for user in users %}
       <div class="user-card" data-user="{{ user }}">
-        <span class="beer-count">{{ data[user]["total"] }}</span>
+        <span class="beer-count">{{ data.get(user, {}).get("total", 0) }}</span>
       </div>
     {% endfor %}
   </div>
 
-  <!-- 💃 Woman animation container -->
   <div id="woman-container"></div>
 
-  <!-- 🔐 Admin Tools (hidden by default, toggled with Ctrl + `) -->
-  <div id="admin-panel">
-    <h3>🔧 Admin Panel</h3>
-
-    <p>
-      <label>Username:</label><br>
-      <input type="text" id="admin-name" placeholder="e.g. Grace">
-    </p>
-
-    <p>
-      <label>Adjust Beers (+/-):</label><br>
-      <input type="number" id="admin-amount" placeholder="e.g. 5 or -3">
-    </p>
-
-    <button onclick="submitBeerAdjustment()">Apply Change</button>
-
-    <hr>
-
-    <h4>Set Alcoholic of the Week</h4>
-
-    <p>
-      <label>Name:</label><br>
-      <input type="text" id="aotw-name-input" placeholder="e.g. Grace">
-    </p>
-
-    <p>
-      <label>Image URL:</label><br>
-      <input type="text" id="aotw-image-input" placeholder="https://...">
-    </p>
-
-    <p>
-      <label>Message:</label><br>
-      <input type="text" id="aotw-message-input" placeholder="Crowned for excellence 🍻">
-    </p>
-
-    <button onclick="submitAOTW()">Set AOTW</button>
-  </div>
-
-  <!-- 🔌 Main JS -->
   <script src="/static/main.js"></script>
 </body>
 </html>
