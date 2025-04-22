@@ -11,8 +11,22 @@
   <h1 id="title">1 MILLION BEERS</h1>
   <h2 id="total-beers-container">Total Beers: <span id="total-beers">0</span></h2>
 
-  {% if aotw %}
-    <h3 style="margin-bottom: 20px;">🏅 Alcoholic of the Week: {{ aotw }}</h3>
+<!-- 💥 Progress to 1 Million Beers -->
+<div style="margin: 20px 0;">
+  <div style="font-size: 10px;">1 MILLION BEER GOAL</div>
+  <div class="bar-wrapper" style="height: 20px;">
+    <div id="million-bar" class="bar" style="width: 0%; background: linear-gradient(90deg, #00c853, #ffeb3b);"></div>
+  </div>
+  <div id="million-count" style="font-size: 10px; margin-top: 5px;">0 beers (0%)</div>
+</div>
+
+{% if aotw %}
+<div style="margin: 20px auto; border: 2px dashed #f8c400; padding: 10px; max-width: 300px; background: #222; border-radius: 10px;">
+  <img src="{{ aotw.image }}" alt="AOTW" style="max-width: 100%; border-radius: 6px;">
+  <div style="font-size: 10px; margin-top: 5px;">🏅 <strong>{{ aotw.name }}</strong></div>
+  <div style="font-size: 8px; color: #ccc;">{{ aotw.caption }}</div>
+</div>
+{% endif %}
   {% endif %}
 
   <div class="tabs">

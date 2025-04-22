@@ -104,23 +104,17 @@ function getTitle(rank, beers) {
 }
 
 // 📈 Update total beers and progress bar
+
 function updateTotalBeers() {
   let total = 0;
   document.querySelectorAll('.beer-count').forEach(el => {
     total += parseInt(el.textContent);
   });
+  document.getElementById('total-beers').textContent = total;
 
-  const totalLabel = document.getElementById('total-beers');
-  const barFill = document.getElementById('progress-bar-fill');
-  const progressLabel = document.getElementById('progress-label');
-
-  if (totalLabel) totalLabel.textContent = total;
-
-  const percent = (total / 1000000) * 100;
-  if (barFill) barFill.style.width = `${percent}%`;
-  if (progressLabel) {
-    progressLabel.textContent = `${total.toLocaleString()} / 1,000,000 Beers (${percent.toFixed(2)}%)`;
-  }
+  const percent = Math.min((total / 1000000) * 100, 100).toFixed(2);
+  document.getElementById('million-bar').style.width = `${percent}%`;
+  document.getElementById('million-count').textContent = `${total} beers (${percent}%)`;
 }
 
 // 💃 Woman animation
