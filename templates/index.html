@@ -23,14 +23,14 @@
 
   <div id="leaderboard-container"></div>
 
-  <!-- ✅ Hidden user data so JS can build leaderboard -->
-  <div id="user-list" style="display: none;">
-    {% for user in users %}
-      <div class="user-card" data-user="{{ user }}">
-        <span class="beer-count">{{ data.get(user, {}).get("total", 0) }}</span>
-      </div>
-    {% endfor %}
-  </div>
+<!-- ✅ Hidden user data so JS can build leaderboard -->
+<div id="user-list" style="display: none;">
+  {% for user in users %}
+    <div class="user-card" data-user="{{ user }}">
+      <span class="beer-count">{{ data.get(user, {}).get("total", 0) }}</span>
+    </div>
+  {% endfor %}
+</div>
 
   <div id="woman-container"></div>
 
