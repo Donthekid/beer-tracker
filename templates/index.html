@@ -21,10 +21,14 @@
 </div>
 
 {% if aotw %}
-<div style="margin: 20px auto; border: 2px dashed #f8c400; padding: 10px; max-width: 300px; background: #222; border-radius: 10px;">
-  <img src="{{ aotw.image }}" alt="AOTW" style="max-width: 100%; border-radius: 6px;">
-  <div style="font-size: 10px; margin-top: 5px;">🏅 <strong>{{ aotw.name }}</strong></div>
-  <div style="font-size: 8px; color: #ccc;">{{ aotw.caption }}</div>
+<div style="margin: 20px auto; border: 2px dashed #f8c400; padding: 10px; max-width: 250px; background: #222; border-radius: 10px;">
+  {% if aotw.image %}
+    <img src="{{ aotw.image }}" alt="AOTW" style="width: 100px; height: auto; border-radius: 6px; margin-bottom: 10px;">
+  {% endif %}
+  <div style="font-size: 10px; margin-bottom: 4px;">🏅 <strong>{{ aotw.name }}</strong></div>
+  {% if aotw.caption %}
+    <div style="font-size: 8px; color: #ccc;">{{ aotw.caption }}</div>
+  {% endif %}
 </div>
 {% endif %}
 
