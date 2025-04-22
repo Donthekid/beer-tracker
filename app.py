@@ -123,15 +123,6 @@ def import_beer_totals():
 
     return "✅ All WhatsApp data imported and users synced!"
 
-    for name, total in imported_totals.items():
-        user = BeerLog.query.get(name)
-        if user:
-            user.total = total
-        else:
-            db.session.add(BeerLog(name=name, total=total))
-    db.session.commit()
-
-    return "✅ Imported beer totals from WhatsApp!"
 
 if __name__ == '__main__':
     app.run(debug=True)
