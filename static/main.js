@@ -52,6 +52,7 @@ async function loadToasts() {
 function updateLeaderboard() {
   const leaderboard = [];
 
+  // Get all user cards (Flask rendered them all, even with 0 beers)
   document.querySelectorAll('.user-card').forEach(card => {
     const name = card.getAttribute('data-user');
     const beers = parseInt(card.querySelector('.beer-count').textContent);
@@ -87,6 +88,7 @@ function updateLeaderboard() {
         <button onclick="addBeer('${user.name}', 5)">+5</button>
       </div>
     `;
+
     container.appendChild(row);
   });
 }
