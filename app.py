@@ -101,27 +101,26 @@ def set_aotw():
 
 @app.route('/import')
 def import_beer_totals():
-    +imported_totals = {
-    "Fantasia": 394, "Yumiko": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
-    "Patrick": 161, "Eamon": 143, "Carlos": 124, "Bella": 116, "Carla": 107,
-    "Stephanie": 102, "Nicolas": 97, "Grace": 93, "Daniel": 92, "Nataly": 78,
-    "Gor": 63, "Tessa": 53, "Jonathon": 50, "Charlie": 50, "Kira": 49,
-    "Yoseph": 46, "Bradley": 43, "Jacob": 41, "Lauren": 39, "Gracie": 30,
-    "Josh": 27, "Jasmine": 26, "Ina": 25, "Kai": 22, "Narissa": 22,
-    "Amanda": 22, "Lucas": 17, "Valentin": 16, "Anthony": 13, "Kenzie": 11,
-    "Natalia": 5, "Sophia": 2, "Alora": 2, "Eleana": 1
-}
+    imported_totals = {
+        "Fantasia": 394, "Yumiko": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
+        "Patrick": 161, "Eamon": 143, "Carlos": 124, "Bella": 116, "Carla": 107,
+        "Stephanie": 102, "Nicolas": 97, "Grace": 93, "Daniel": 92, "Nataly": 78,
+        "Gor": 63, "Tessa": 53, "Jonathon": 50, "Charlie": 50, "Kira": 49,
+        "Yoseph": 46, "Bradley": 43, "Jacob": 41, "Lauren": 39, "Gracie": 30,
+        "Josh": 27, "Jasmine": 26, "Ina": 25, "Kai": 22, "Narissa": 22,
+        "Amanda": 22, "Lucas": 17, "Valentin": 16, "Anthony": 13, "Kenzie": 11,
+        "Natalia": 5, "Sophia": 2, "Alora": 2, "Eleana": 1
+    }
+
+    BeerLog.query.delete()
+    db.session.commit()
 
     for name in USERS:
         total = imported_totals.get(name, 0)
-        log = BeerLog.query.get(name)
-        if log:
-            log.total = total
-        else:
-            db.session.add(BeerLog(name=name, total=total))
-    db.session.commit()
+        db.session.add(BeerLog(name=name, total=total))
 
-    return "✅ All WhatsApp data imported and users synced!"
+    db.session.commit()
+    return "✅ All users and totals re-imported!"
 
 
 if __name__ == '__main__':
