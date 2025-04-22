@@ -12,7 +12,8 @@ USERS = [
     "Alora", "Amanda", "Anthony", "Bella", "Bradley", "Carla", "Carlos", "Charlie", "Daniel",
     "Devon", "Eamon", "Eleana", "Fantasia", "Gor", "Grace", "Gracie", "Ina", "Jacob", "Jacquline",
     "Jasmine", "Jonathon", "Josh", "Kai", "Kenzie", "Kira", "Lauren", "Lucas", "Narissa", "Natalia",
-    "Nataly", "Nicolas", "Patrick", "Sophia", "Stephanie", "Steven", "Tessa", "Valentin", "Yoseph", "Yumiko"
+    "Nataly", "Nicolas", "Patrick", "Sophia", "Stephanie", "Steven", "Tessa", "Valentin", "Yoseph", "Yumiko",
+    "Yumi", "Caitlin", "Sue", "Alex", "Devin", "Eunsung"
 ]
 
 class BeerLog(db.Model):
@@ -63,7 +64,7 @@ def add_beer():
 @app.route('/import')
 def import_beer_totals():
     imported_totals = {
-        "Fantasia": 394, "Yumiko": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
+        "Fantasia": 394, "Yumi": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
         "Patrick": 161, "Eamon": 143, "Carlos": 124, "Bella": 116, "Carla": 107,
         "Stephanie": 102, "Nicolas": 97, "Grace": 93, "Daniel": 92, "Nataly": 78,
         "Gor": 63, "Tessa": 53, "Jonathon": 50, "Charlie": 50, "Kira": 49,
