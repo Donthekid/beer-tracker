@@ -34,16 +34,21 @@
 
   <div id="woman-container"></div>
 
-<!-- 🛠 Admin Panel (hidden by default, toggled by pressing `,`) -->
-<div id="admin-panel" style="display: none; margin-top: 20px;">
+<div id="admin-panel" style="display: none; margin-top: 30px;">
   <h3 style="font-size: 10px;">Admin Controls</h3>
-  <select id="admin-user">
-    {% for user in users %}
-      <option value="{{ user }}">{{ user }}</option>
-    {% endfor %}
-  </select>
+
+  <!-- Add/Subtract Beers -->
+  <input id="admin-name" type="text" placeholder="Name (e.g. Daniel)">
   <input id="admin-amount" type="number" placeholder="+/- Beers" style="width: 100px;">
-  <button onclick="adminAdjust()">Submit</button>
+  <button onclick="adminAdjust()">Update Beers</button>
+
+  <hr style="margin: 10px 0;">
+
+  <!-- Set AOTW -->
+  <input id="aotw-name" type="text" placeholder="AOTW Name">
+  <input id="aotw-caption" type="text" placeholder="Caption (e.g. MVP)">
+  <input id="aotw-image" type="text" placeholder="Image URL">
+  <button onclick="setAOTW()">Set AOTW</button>
 </div>
 
   <script src="/static/main.js"></script>

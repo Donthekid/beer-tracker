@@ -13,7 +13,7 @@ USERS = [
     "Devon", "Eamon", "Eleana", "Fantasia", "Gor", "Grace", "Gracie", "Ina", "Jacob", "Jacquline",
     "Jasmine", "Jonathon", "Josh", "Kai", "Kenzie", "Kira", "Lauren", "Lucas", "Narissa", "Natalia",
     "Nataly", "Nicolas", "Patrick", "Sophia", "Stephanie", "Steven", "Tessa", "Valentin", "Yoseph", "Yumiko",
-    "Yumi", "Caitlin", "Sue", "Alex", "Devin", "Eunsung"
+    "Caitlin", "Sue", "Alex", "Devin", "Eunsung"
 ]
 
 class BeerLog(db.Model):
@@ -106,15 +106,21 @@ def init_aotw():
 @app.route('/set-aotw')
 def set_aotw():
     name = request.args.get("name")
-    if name and name in USERS:
-        record = AOTW.query.first()
-        if record:
-            record.name = name
-        else:
-            db.session.add(AOTW(name=name))
-        db.session.commit()
-        return f"✅ AOTW set to {name}"
-    return "❌ Invalid name", 400
+    caption = request.args.get("caption")
+    image = request.args.get("image")
+
+    if not name:
+        return "❌ Missing name", 400
+
+    # Add optional caption and image handling later if needed
+    record = AOTW.query.first()
+    if record:
+        record.name = name
+    else:
+        db.session.add(AOTW(name=name))
+    db.session.commit()
+
+    return f"✅ AOTW set to {name}"
 
 @app.route('/debug-totals')
 def debug_totals():

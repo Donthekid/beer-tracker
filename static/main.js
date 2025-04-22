@@ -210,7 +210,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 async function adminAdjust() {
-  const user = document.getElementById("admin-user").value;
+  const user = document.getElementById("admin-name").value;
   const amount = document.getElementById("admin-amount").value;
 
   const res = await fetch(`/admin-adjust?user=${user}&amount=${amount}`);
@@ -218,5 +218,16 @@ async function adminAdjust() {
   alert(msg);
   updateLeaderboard();
   updateTotalBeers();
+}
+
+async function setAOTW() {
+  const name = document.getElementById("aotw-name").value;
+  const caption = document.getElementById("aotw-caption").value;
+  const image = document.getElementById("aotw-image").value;
+
+  const res = await fetch(`/set-aotw?name=${encodeURIComponent(name)}&caption=${encodeURIComponent(caption)}&image=${encodeURIComponent(image)}`);
+  const msg = await res.text();
+  alert(msg);
+  location.reload();
 }
 
