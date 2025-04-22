@@ -42,8 +42,13 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    users = BeerLog.query.all()
-    user_totals = {user.name: {"total": user.total, "dates": {}} for user in users}
+    try:
+        users = BeerLog.query.all()
+        user_totals = {user.name: {"total": user.total, "dates": {}} for user in users}
+    except Exception as e:
+        # fallback in case table doesn't exist
+        print("Error loading from database:", e)
+        user_totals = {user: {"total": 0, "dates": {}} for user in USERS}
     return render_template('index.html', users=USERS, data=user_totals)
 
 @app.route('/add', methods=['POST'])
