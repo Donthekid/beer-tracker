@@ -65,6 +65,15 @@ def add_beer():
 
     return jsonify(success=True, new_total=log.total)
 
+@app.route('/init')
+def init_db():
+    db.create_all()
+    for user in USERS:
+        if not BeerLog.query.get(user):
+            db.session.add(BeerLog(name=user, total=0))
+    db.session.commit()
+    return "✅ Database initialized with users!"
+
 if __name__ == '__main__':
     app.run(debug=True)
 
