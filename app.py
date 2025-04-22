@@ -101,7 +101,7 @@ def set_aotw():
 
 @app.route('/import')
 def import_beer_totals():
-imported_totals = {
+    +imported_totals = {
     "Fantasia": 394, "Yumiko": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
     "Patrick": 161, "Eamon": 143, "Carlos": 124, "Bella": 116, "Carla": 107,
     "Stephanie": 102, "Nicolas": 97, "Grace": 93, "Daniel": 92, "Nataly": 78,
