@@ -102,16 +102,27 @@ def set_aotw():
         db.session.commit()
         return f"✅ AOTW set to {name}"
     return "❌ Invalid name", 400
+
 @app.route('/import')
 def import_beer_totals():
     imported_totals = {
-        "Grace": 93, "Daniel": 87, "Stephanie": 102, "Patrick": 161,
-        "Eamon": 140, "Carlos": 124, "Bella": 116, "Carla": 107,
-        "Nicolas": 86, "Nataly": 71, "Gor": 61, "Tessa": 53,
-        "Kira": 49, "Bradley": 43, "Jacob": 41, "Lauren": 39,
-        "Gracie": 30, "Fantasia": 407, "Yoseph": 46, "Yumiko": 193,
-        "Jacquline": 184, "Jonathon": 50, "Kenzie": 8
+        "Fantasia": 394, "Yumiko": 190, "Jacquline": 190, "Devon": 187, "Steven": 176,
+        "Patrick": 161, "Eamon": 143, "Carlos": 124, "Bella": 116, "Carla": 107,
+        "Stephanie": 102, "Nicolas": 97, "Grace": 93, "Daniel": 92, "Nataly": 78,
+        "Gor": 63, "Tessa": 53, "Jonathon": 50, "Charlie": 50, "Kira": 49,
+        "Yoseph": 46, "Bradley": 43, "Jacob": 41, "Lauren": 39, "Gracie": 30
     }
+
+    for name in USERS:
+        total = imported_totals.get(name, 0)
+        log = BeerLog.query.get(name)
+        if log:
+            log.total = total
+        else:
+            db.session.add(BeerLog(name=name, total=total))
+    db.session.commit()
+
+    return "✅ All WhatsApp data imported and users synced!"
 
     for name, total in imported_totals.items():
         user = BeerLog.query.get(name)
