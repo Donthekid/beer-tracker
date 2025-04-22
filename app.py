@@ -8,6 +8,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+from sqlalchemy import text
+
+@app.route('/reset-aotw-table')
+def reset_aotw_table():
+    try:
+        db.session.execute(text('DROP TABLE IF EXISTS aotw CASCADE;'))
+        db.session.commit()
+        db.create_all()
+        db.session.add(AOTW(name="No one yet", caption="", image=""))
+        db.session.commit()
+        return "✅ AOTW table reset and initialized!"
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
+
 USERS = [
     "Alora", "Amanda", "Anthony", "Bella", "Bradley", "Carla", "Carlos", "Charlie", "Daniel",
     "Devon", "Eamon", "Eleana", "Fantasia", "Gor", "Grace", "Gracie", "Ina", "Jacob", "Jacquline",
@@ -137,7 +151,9 @@ if __name__ == '__main__':
 @app.route('/reset-aotw-table')
 def reset_aotw_table():
     try:
-        db.session.execute('DROP TABLE IF EXISTS aotw CASCADE;')
+from sqlalchemy import text
+...
+db.session.execute(text('DROP TABLE IF EXISTS aotw CASCADE;'))
         db.session.commit()
         db.create_all()
         db.session.add(AOTW(name="No one yet", caption="", image=""))
