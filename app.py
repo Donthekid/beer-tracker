@@ -37,20 +37,16 @@ class AOTW(db.Model):
 
 @app.route('/')
 def index():
-    try:
-        users = BeerLog.query.all()
-        user_totals = {
-            user.name: {"total": int(user.total), "dates": {}} for user in users
-        }
+    user_totals = {}
+    for user in USERS:
+        log = BeerLog.query.get(user)
+        total = log.total if log else 0
+        user_totals[user] = {"total": total, "dates": {}}
 
-        aotw_record = AOTW.query.first()
-        aotw = aotw_record.name if aotw_record else None
+    aotw_record = AOTW.query.first()
+    aotw = aotw_record.name if aotw_record else None
 
-        return render_template('index.html', users=USERS, data=user_totals, aotw=aotw)
-
-    except Exception as e:
-        print("🔥 ERROR in / route:", str(e))
-        return f"<h1>500 Error</h1><pre>{str(e)}</pre>", 500
+    return render_template('index.html', users=USERS, data=user_totals, aotw=aotw)
 
 @app.route('/add', methods=['POST'])
 def add_beer():
