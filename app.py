@@ -73,15 +73,17 @@ def import_beer_totals():
         "Natalia": 5, "Sophia": 2, "Alora": 2, "Eleana": 1
     }
 
+    # Delete all current records first
     BeerLog.query.delete()
     db.session.commit()
 
+    # Add ALL users with correct total or 0 fallback
     for name in USERS:
         total = imported_totals.get(name, 0)
         db.session.add(BeerLog(name=name, total=total))
 
     db.session.commit()
-    return "✅ All users and totals re-imported!"
+    return "✅ All users imported with 0+ beer totals"
 
 @app.route('/init')
 def init_db():
