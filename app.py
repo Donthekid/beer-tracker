@@ -123,10 +123,10 @@ def import_beer_totals():
     return "✅ All users and totals re-imported!"
 
 @app.route('/add-user/<name>')
-def add_user(name):
+def add_user(name): Yumiko
     name = name.capitalize()
     if not BeerLog.query.get(name):
-        db.session.add(BeerLog(name=name, total=0))
+        db.session.add(BeerLog(name=name, total=190))
         db.session.commit()
         return f"✅ Added {name} with 0 beers."
     return f"ℹ️ {name} already exists."
