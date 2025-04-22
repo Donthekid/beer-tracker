@@ -122,6 +122,10 @@ def import_beer_totals():
     db.session.commit()
     return "✅ All users and totals re-imported!"
 
+@app.route('/debug-totals')
+def debug_totals():
+    all_users = BeerLog.query.all()
+    return "<br>".join(f"{u.name}: {u.total}" for u in all_users)
 
 if __name__ == '__main__':
     app.run(debug=True)
