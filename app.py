@@ -33,8 +33,8 @@ class AOTW(db.Model):
 def index():
     user_totals = {}
     for user in USERS:
-        log = BeerLog.query.get(user)
-        total = log.total if log else 0
+        record = BeerLog.query.get(user)
+        total = record.total if record else 0
         user_totals[user] = {"total": total, "dates": {}}
 
     aotw_record = AOTW.query.first()
