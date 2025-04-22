@@ -134,3 +134,15 @@ def debug_totals():
 if __name__ == '__main__':
     app.run(debug=True)
 
+@app.route('/reset-aotw-table')
+def reset_aotw_table():
+    try:
+        db.session.execute('DROP TABLE IF EXISTS aotw CASCADE;')
+        db.session.commit()
+        db.create_all()
+        db.session.add(AOTW(name="No one yet", caption="", image=""))
+        db.session.commit()
+        return "✅ AOTW table reset and initialized!"
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
+
