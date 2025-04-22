@@ -34,6 +34,18 @@
 
   <div id="woman-container"></div>
 
+<!-- 🛠 Admin Panel (hidden by default, toggled by pressing `,`) -->
+<div id="admin-panel" style="display: none; margin-top: 20px;">
+  <h3 style="font-size: 10px;">Admin Controls</h3>
+  <select id="admin-user">
+    {% for user in users %}
+      <option value="{{ user }}">{{ user }}</option>
+    {% endfor %}
+  </select>
+  <input id="admin-amount" type="number" placeholder="+/- Beers" style="width: 100px;">
+  <button onclick="adminAdjust()">Submit</button>
+</div>
+
   <script src="/static/main.js"></script>
 </body>
 </html>

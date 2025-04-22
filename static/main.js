@@ -200,3 +200,23 @@ window.onload = () => {
   setInterval(loadToasts, 10000);
 };
 
+let adminMode = false;
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === ",") {
+    adminMode = !adminMode;
+    document.getElementById("admin-panel").style.display = adminMode ? "block" : "none";
+  }
+});
+
+async function adminAdjust() {
+  const user = document.getElementById("admin-user").value;
+  const amount = document.getElementById("admin-amount").value;
+
+  const res = await fetch(`/admin-adjust?user=${user}&amount=${amount}`);
+  const msg = await res.text();
+  alert(msg);
+  updateLeaderboard();
+  updateTotalBeers();
+}
+
