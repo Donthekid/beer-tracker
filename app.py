@@ -102,6 +102,26 @@ def set_aotw():
         db.session.commit()
         return f"✅ AOTW set to {name}"
     return "❌ Invalid name", 400
+@app.route('/import')
+def import_beer_totals():
+    imported_totals = {
+        "Grace": 93, "Daniel": 87, "Stephanie": 102, "Patrick": 161,
+        "Eamon": 140, "Carlos": 124, "Bella": 116, "Carla": 107,
+        "Nicolas": 86, "Nataly": 71, "Gor": 61, "Tessa": 53,
+        "Kira": 49, "Bradley": 43, "Jacob": 41, "Lauren": 39,
+        "Gracie": 30, "Fantasia": 407, "Yoseph": 46, "Yumiko": 193,
+        "Jacquline": 184, "Jonathon": 50, "Kenzie": 8
+    }
+
+    for name, total in imported_totals.items():
+        user = BeerLog.query.get(name)
+        if user:
+            user.total = total
+        else:
+            db.session.add(BeerLog(name=name, total=total))
+    db.session.commit()
+
+    return "✅ Imported beer totals from WhatsApp!"
 
 if __name__ == '__main__':
     app.run(debug=True)
