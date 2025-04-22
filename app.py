@@ -1,152 +1,117 @@
 from flask import Flask, render_template, request, jsonify
-import json
+import sqlite3
 from datetime import datetime
 
 app = Flask(__name__)
+DB_FILE = 'data/beers.db'
 
-# Paths to your data files
-DATA_FILE = 'data/beers.json'
-AOTW_FILE = 'data/aotw.json'
-
-# Your full list of users
 USERS = [
-    "Daniel", "Eamon", "Carlos", "Gor", "Grace", "Jacob", "Josh", "Lauren",
-    "Natalia", "Patrick", "Stephanie", "Sophia", "Alex", "Alora", "Amanda",
-    "Anthony", "Bella", "Bradley", "Caitlin", "Carla", "Charlie", "Devin",
-    "Devon", "Eleana", "Eunsung", "Fantasia", "Gracie", "Ina", "Jacquline",
-    "Jasmine", "Jon", "Jonathon", "Kai", "Kenzie", "Khoudia", "Kira", "Lucas",
-    "Narissa", "Nataly", "Nicolas", "Steven", "Sue", "Tessa", "Valentin"
+    "Alex", "Alora", "Amanda", "Anthony", "Bella", "Bradley", "Catlin", "Carla", "Carlos",
+    "Charlie", "Daniel", "Devin", "Devon", "Eamon", "Eleana", "Eunsung", "Fantasia", "Gor",
+    "Grace", "Gracie", "Ina", "Jacob", "Jacquline", "Jasmine", "Jon", "Jonathon",
+    "Josh", "Kai", "Kenzie", "Khoudia", "Kira", "Lauren", "Lucas", "Narissa", "Natalia",
+    "Nataly", "Nicolas", "Patrick", "Sophia", "Stephanie", "Steven", "Sue",
+    "Tessa", "Valentin", "Yoseph", "Yumiko"
 ]
 
-# Load beer data from JSON file
-def load_data():
-    try:
-        with open(DATA_FILE, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
+def query_db(query, args=(), one=False):
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.execute(query, args)
+        rv = cur.fetchall()
+        conn.commit()
+        return (rv[0] if rv else None) if one else rv
 
-# Save beer data to JSON
-def save_data(data):
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=2)
-
-# Load Alcoholic of the Week data
-def load_aotw():
-    try:
-        with open(AOTW_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return {"name": "TBD", "image": "", "message": ""}
-
-# Home route
+# 📊 HOME PAGE
 @app.route('/')
 def index():
-    data = load_data()
-    aotw = load_aotw()
-
-    # Ensure all users are in the dataset
+    # Load beer totals
+    data = {}
+    rows = query_db('SELECT username, total FROM beers')
     for user in USERS:
-        if user not in data:
-            data[user] = {"total": 0, "dates": {}}
+        user_data = next((r for r in rows if r['username'] == user), None)
+        data[user] = {"total": user_data['total'] if user_data else 0, "dates": {}}
 
-    return render_template('index.html', users=USERS, data=data, aotw=aotw)
+    # Load AOTW
+    aotw = query_db('SELECT * FROM aotw ORDER BY created_at DESC LIMIT 1', one=True)
+    if aotw:
+        aotw_data = dict(aotw)
+    else:
+        aotw_data = {"name": "TBD", "image": "", "message": ""}
 
-# Route to add beers
+    return render_template('index.html', users=USERS, data=data, aotw=aotw_data)
+
+# 🍺 LOG BEERS
 @app.route('/add', methods=['POST'])
 def add_beer():
     username = request.json['username']
     count = int(request.json['count'])
-    date = datetime.now().strftime('%Y-%m-%d')
 
-    data = load_data()
+    existing = query_db('SELECT total FROM beers WHERE username = ?', [username], one=True)
+    if existing:
+        new_total = existing['total'] + count
+        query_db('UPDATE beers SET total = ? WHERE username = ?', [new_total, username])
+    else:
+        new_total = count
+        query_db('INSERT INTO beers (username, total) VALUES (?, ?)', [username, new_total])
 
-    if username not in data:
-        data[username] = {"total": 0, "dates": {}}
+    return jsonify(success=True, new_total=new_total)
 
-    data[username]["total"] += count
-    data[username]["dates"][date] = data[username]["dates"].get(date, 0) + count
-
-    save_data(data)
-    return jsonify(success=True, new_total=data[username]["total"])
+# 🔐 ADMIN: ADJUST BEERS
 @app.route('/admin/adjust', methods=['POST'])
 def admin_adjust():
     username = request.json['username']
     count = int(request.json['count'])
 
-    data = load_data()
+    existing = query_db('SELECT total FROM beers WHERE username = ?', [username], one=True)
+    if existing:
+        new_total = max(existing['total'] + count, 0)
+        query_db('UPDATE beers SET total = ? WHERE username = ?', [new_total, username])
+    else:
+        new_total = max(count, 0)
+        query_db('INSERT INTO beers (username, total) VALUES (?, ?)', [username, new_total])
 
-    if username not in data:
-        data[username] = {"total": 0, "dates": {}}
+    return jsonify(success=True, new_total=new_total)
 
-    data[username]["total"] += count
-    if data[username]["total"] < 0:
-        data[username]["total"] = 0
-
-    save_data(data)
-    return jsonify(success=True, new_total=data[username]["total"])
+# 👑 SET AOTW
 @app.route('/admin/set_aotw', methods=['POST'])
 def set_aotw():
     data = request.json
-    name = data.get("name", "")
-    image = data.get("image", "")
-    message = data.get("message", "")
+    name = data.get("name")
+    image = data.get("image")
+    message = data.get("message")
+    query_db('INSERT INTO aotw (name, image, message) VALUES (?, ?, ?)', [name, image, message])
+    return jsonify(success=True)
 
-    aotw_data = {
-        "name": name,
-        "image": image,
-        "message": message
-    }
-
-    try:
-        with open(AOTW_FILE, 'w') as f:
-            json.dump(aotw_data, f, indent=2)
-        return jsonify(success=True)
-    except:
-        return jsonify(success=False), 500
-
-# Run the app
-TOAST_FILE = 'data/toast.json'
-
-def load_toasts():
-    try:
-        with open(TOAST_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_toasts(toasts):
-    with open(TOAST_FILE, 'w') as f:
-        json.dump(toasts, f, indent=2)
-
+# 🔁 GLOBAL TOAST FEED
 @app.route('/toast', methods=['GET'])
 def get_toasts():
-    return jsonify(load_toasts())
+    results = query_db('SELECT * FROM toasts ORDER BY id DESC LIMIT 5')
+    return jsonify([dict(row) for row in reversed(results)])
 
 @app.route('/toast', methods=['POST'])
 def post_toast():
-    data = request.json
-    name = data.get("name")
-    count = int(data.get("count"))
+    name = request.json.get("name")
+    count = int(request.json.get("count"))
     timestamp = datetime.now().isoformat()
 
-    toasts = load_toasts()
-
-    if toasts and toasts[-1]["name"] == name:
-        toasts[-1]["count"] += count
-        toasts[-1]["timestamp"] = timestamp
+    # Check if last toast is same user → merge
+    last = query_db('SELECT * FROM toasts ORDER BY id DESC LIMIT 1', one=True)
+    if last and last["name"] == name:
+        new_count = last["count"] + count
+        query_db('UPDATE toasts SET count = ?, timestamp = ? WHERE id = ?', [new_count, timestamp, last["id"]])
     else:
-        toasts.append({
-            "name": name,
-            "count": count,
-            "timestamp": timestamp
-        })
-        if len(toasts) > 5:
-            toasts.pop(0)
+        query_db('INSERT INTO toasts (name, count, timestamp) VALUES (?, ?, ?)', [name, count, timestamp])
+        # Trim to max 5
+        all_toasts = query_db('SELECT id FROM toasts ORDER BY id DESC')
+        if len(all_toasts) > 5:
+            to_delete = [row['id'] for row in all_toasts[5:]]
+            for tid in to_delete:
+                query_db('DELETE FROM toasts WHERE id = ?', [tid])
 
-    save_toasts(toasts)
     return jsonify(success=True)
 
+# 🏁 RUN APP
 if __name__ == '__main__':
     app.run(debug=True)
 
