@@ -8,29 +8,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# 🧑‍🤝‍🧑 Predefined user list
 USERS = [
-    "Daniel", "Eamon", "Carlos", "Gor", "Grace", "Jacob", "Josh", "Lauren",
-    "Natalia", "Patrick", "Stephanie", "Sophia", "Alex", "Alora", "Amanda",
-    "Anthony", "Bella", "Bradley", "Caitlin", "Carla", "Charlie", "Devin",
-    "Devon", "Eleana", "Eunsung", "Fantasia", "Gracie", "Ina", "Jacquline",
-    "Jasmine", "Jon", "Jonathon", "Kai", "Kenzie", "Khoudia", "Kira", "Lucas",
-    "Narissa", "Nataly", "Nicolas", "Steven", "Sue", "Tessa", "Valentin", "Yumiko"
+    "Alora", "Amanda", "Anthony", "Bella", "Bradley", "Carla", "Carlos", "Charlie", "Daniel",
+    "Devon", "Eamon", "Eleana", "Fantasia", "Gor", "Grace", "Gracie", "Ina", "Jacob", "Jacquline",
+    "Jasmine", "Jonathon", "Josh", "Kai", "Kenzie", "Kira", "Lauren", "Lucas", "Narissa", "Natalia",
+    "Nataly", "Nicolas", "Patrick", "Sophia", "Stephanie", "Steven", "Tessa", "Valentin", "Yoseph", "Yumiko"
 ]
 
-# 🍺 Beer totals
 class BeerLog(db.Model):
     name = db.Column(db.String(50), primary_key=True)
     total = db.Column(db.Integer, default=0)
 
-# 🗓️ Optional: Date-based tracking
 class BeerEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     date = db.Column(db.String(20))
     amount = db.Column(db.Integer)
 
-# 🏆 Alcoholic of the Week
 class AOTW(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
@@ -66,39 +60,6 @@ def add_beer():
 
     return jsonify(success=True, new_total=log.total)
 
-# 🔧 One-time setup: create all users
-@app.route('/init')
-def init_db():
-    db.create_all()
-    for user in USERS:
-        if not BeerLog.query.get(user):
-            db.session.add(BeerLog(name=user, total=0))
-    db.session.commit()
-    return "✅ Database initialized with users!"
-
-# 🔧 One-time setup: create AOTW table and default entry
-@app.route('/init-aotw')
-def init_aotw():
-    db.create_all()
-    if not AOTW.query.first():
-        db.session.add(AOTW(name="No one yet"))
-        db.session.commit()
-    return "✅ AOTW table initialized!"
-
-# 🛠 Update AOTW via browser (e.g. /set-aotw?name=Daniel)
-@app.route('/set-aotw')
-def set_aotw():
-    name = request.args.get("name")
-    if name and name in USERS:
-        record = AOTW.query.first()
-        if record:
-            record.name = name
-        else:
-            db.session.add(AOTW(name=name))
-        db.session.commit()
-        return f"✅ AOTW set to {name}"
-    return "❌ Invalid name", 400
-
 @app.route('/import')
 def import_beer_totals():
     imported_totals = {
@@ -122,14 +83,35 @@ def import_beer_totals():
     db.session.commit()
     return "✅ All users and totals re-imported!"
 
-@app.route('/add-user/<name>')
-def add_user(Yumiko):
-    name = name.capitalize()
-    if not BeerLog.query.get(name):
-        db.session.add(BeerLog(name=name, total=190))
+@app.route('/init')
+def init_db():
+    db.create_all()
+    for user in USERS:
+        if not BeerLog.query.get(user):
+            db.session.add(BeerLog(name=user, total=0))
+    db.session.commit()
+    return "✅ Database initialized!"
+
+@app.route('/init-aotw')
+def init_aotw():
+    db.create_all()
+    if not AOTW.query.first():
+        db.session.add(AOTW(name="No one yet"))
         db.session.commit()
-        return f"✅ Added {name} with 0 beers."
-    return f"ℹ️ {name} already exists."
+    return "✅ AOTW initialized!"
+
+@app.route('/set-aotw')
+def set_aotw():
+    name = request.args.get("name")
+    if name and name in USERS:
+        record = AOTW.query.first()
+        if record:
+            record.name = name
+        else:
+            db.session.add(AOTW(name=name))
+        db.session.commit()
+        return f"✅ AOTW set to {name}"
+    return "❌ Invalid name", 400
 
 @app.route('/debug-totals')
 def debug_totals():
@@ -138,5 +120,4 @@ def debug_totals():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
 
